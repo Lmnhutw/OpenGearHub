@@ -1,6 +1,6 @@
 # Kiến trúc và cấu trúc code
 
-Tài liệu này mô tả cấu trúc đích. Hiện repo mới có thư mục và README hướng dẫn; chưa có module Rust hoặc Slint được triển khai. Scope sản phẩm nằm trong [PROJECT.md](../PROJECT.md).
+Phase 1 đã có Rust/Slint, inventory HID, Windows identity, registry và worker. Contract điều khiển và protocol vẫn dành cho Phase 2. Kết quả kiểm chứng nằm trong [báo cáo Phase 1](phase-1-report.md); scope sản phẩm nằm trong [PROJECT.md](../PROJECT.md).
 
 ## 1. Hình dạng hệ thống
 
@@ -23,7 +23,7 @@ flowchart LR
 
 ## 2. Cấu trúc đích
 
-Các file đánh dấu `[planned]` chưa tồn tại. README ở thư mục giữ cấu trúc trong Git và mô tả trách nhiệm.
+Các file đánh dấu `[planned]` chưa tồn tại. Những module Phase 1 bên dưới đã có implementation; README giải thích trách nhiệm từng thư mục.
 
 ```text
 OpenGearHub/
@@ -31,19 +31,19 @@ OpenGearHub/
 ├── PROJECT.md
 ├── AGENTS.md
 ├── LICENSE
-├── Cargo.toml                         [planned: giai đoạn 1]
-├── Cargo.lock                         [planned: giai đoạn 1]
-├── build.rs                           [planned: giai đoạn 1]
+├── Cargo.toml
+├── Cargo.lock
+├── build.rs
 ├── src/
 │   ├── README.md
-│   ├── main.rs                        [planned: giai đoạn 1]
-│   ├── app.rs                         [planned: giai đoạn 1]
+│   ├── main.rs
+│   ├── app.rs
 │   ├── devices/
-│   │   ├── mod.rs                     [planned: giai đoạn 1]
-│   │   ├── types.rs                   [planned: giai đoạn 1]
-│   │   ├── discovery.rs               [planned: giai đoạn 1]
-│   │   ├── registry.rs                [planned: giai đoạn 1]
-│   │   ├── worker.rs                  [planned: giai đoạn 1]
+│   │   ├── mod.rs
+│   │   ├── types.rs
+│   │   ├── discovery.rs
+│   │   ├── registry.rs
+│   │   ├── worker.rs
 │   │   ├── driver.rs                  [planned: giai đoạn 2]
 │   │   ├── models/
 │   │   │   └── README.md
@@ -51,11 +51,11 @@ OpenGearHub/
 │   │       └── README.md
 │   └── platform/
 │       ├── README.md
-│       ├── mod.rs                     [planned: khi cần Windows API]
-│       └── windows.rs                 [planned: khi cần Windows API]
+│       ├── mod.rs
+│       └── windows.rs
 ├── ui/
 │   ├── README.md
-│   ├── main.slint                     [planned: giai đoạn 1]
+│   ├── main.slint
 │   └── controls/
 │       └── README.md
 ├── tests/
@@ -66,7 +66,8 @@ OpenGearHub/
     ├── roadmap.md
     ├── adding-device.md
     ├── supported-devices.md
-    └── verification.md
+    ├── verification.md
+    └── phase-1-report.md
 ```
 
 ## 3. Trách nhiệm và giới hạn
@@ -114,11 +115,11 @@ Thiết kế factory/registry có thể thay đổi theo protocol đầu tiên; 
 ## 5. I/O và vòng đời
 
 - Một worker ban đầu; tuần tự hóa thao tác trên cùng thiết bị.
-- UI gửi lệnh qua hàng đợi có giới hạn bằng thao tác không chặn. Refresh được gộp; khi có slider thì gộp cập nhật cũ cho cùng thuộc tính.
+- UI gửi lệnh qua hàng đợi dung lượng 1 bằng `try_send`. Chỉ một refresh đang chạy; yêu cầu lặp bị bỏ qua khi busy. Result queue cũng có giới hạn 1.
 - Worker chuyển snapshot/error về main thread qua event loop an toàn của Slint; callback giữ weak handle để tránh chu kỳ tham chiếu.
 - Discovery không chạy theo frame. Giai đoạn 1 quét lúc mở app và refresh thủ công; notification/polling là công việc riêng khi cần.
 - Timeout phải kiểm tra theo từng API/backend. `read_timeout` không bảo đảm mọi feature report, write hoặc enumeration hủy được; thread riêng không tự cung cấp cancellation.
-- Shutdown phải được kiểm thử khi có I/O đang chạy; ghi rõ thao tác không hủy được. Không thêm process/service chỉ để xử lý giả định chưa kiểm chứng.
+- Shutdown đặt cờ closed, đóng command sender và chỉ join worker đã hoàn tất. Nếu enumeration chưa xong thì detach; kết quả không được áp dụng lên UI đã đóng. Đây là best-effort cleanup, không phải bảo đảm hủy I/O. Không có process/service phụ.
 - Không retry vô hạn; không tự retry lệnh ghi chưa rõ tính idempotent.
 
 ## 6. Phạm vi thay đổi khi mở rộng

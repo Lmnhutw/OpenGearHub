@@ -1,6 +1,6 @@
 # Thiết bị và mức tương thích
 
-**Hiện chưa có model nào được triển khai hoặc kiểm chứng bởi OpenGearHub.** Thư mục model/protocol đang là khung tài liệu.
+**Registry production chưa có model điều khiển.** Inventory đã được quan sát trên Windows như bên dưới; thư mục model/protocol vẫn là khung cho Phase 2. Nhận diện descriptor không chứng minh đọc pin hoặc điều khiển thiết bị.
 
 Không suy ra hỗ trợ cả hãng từ một model. USB, Bluetooth và receiver phải có bằng chứng riêng khi hành vi khác nhau.
 
@@ -18,6 +18,7 @@ Mức được ghi theo capability. Ví dụ, xác minh đọc pin không đồn
 
 | Model | Connection | Firmware | Capability | Mức xác minh | Windows/app revision | Ngày và bằng chứng | Giới hạn |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| Logitech USB Receiver theo descriptor, VID:PID 046D:C52B; chưa xác định model thiết bị logic phía sau | USB bus của receiver; không suy ra kết nối thiết bị logic | Chưa xác minh | Inventory descriptor, 8 interface trong một Windows container | Inventory observed | Windows 10 22H2 / app 0.1.0, working tree Phase 1 | 2026-11-10, [báo cáo](phase-1-report.md) | Không có model mapping/driver điều khiển; receiver có thể chứa nhiều thiết bị logic |
 
 Thêm dòng thật khi có dữ liệu. Không điền model minh họa hoặc đánh dấu hỗ trợ từ tài liệu của dự án khác.
 

@@ -1,6 +1,6 @@
 # OpenGearHub — Hồ sơ dự án
 
-Cập nhật: 2026-11-10. Trạng thái triển khai và công việc tiếp theo được quản lý tại [roadmap](docs/roadmap.md).
+Cập nhật: 2026-11-10. Nền tảng Phase 1 đã có code inventory HID chỉ đọc và UI Slint; chưa có model được xác minh điều khiển. Trạng thái kiểm chứng và công việc tiếp theo được quản lý tại [roadmap](docs/roadmap.md).
 
 ## 1. Mục tiêu
 
@@ -12,16 +12,17 @@ Xây dựng ứng dụng desktop bằng Rust, giúp người dùng quản lý th
 
 | Hạng mục | Định hướng | Điều cần xác minh |
 | --- | --- | --- |
-| Ngôn ngữ | Rust, edition 2024 | Toolchain và MSRV theo toàn bộ dependency được chọn |
-| Nền tảng | Windows-first, dự kiến Windows x64 | Phiên bản Windows tối thiểu và môi trường build thực tế |
-| UI | Slint, không dùng WebView | Phiên bản, backend, renderer, accessibility và license phân phối |
+| Ngôn ngữ | Rust edition 2024; 1.96.0 build/test qua, 1.92.0 check qua | Chạy lại kiểm tra khi dependency thay đổi |
+| Nền tảng | Windows x64, target x86_64-pc-windows-msvc | Bằng chứng phiên bản Windows thực tế; chưa chứng nhận mọi build Windows |
+| UI | Slint 1.18.1, Winit, software renderer, accessibility | Kiểm chứng UI và đo tài nguyên trên môi trường thực |
 | Kiến trúc | Một executable, một Cargo package, module theo trách nhiệm | Kiểm chứng ranh giới bằng hai model của hai hãng |
 | Mở rộng | Registry chọn bộ xử lý theo model/interface; UI theo capability | Model mới cần source code và build lại |
-| HID | Dự kiến dùng hidapi | Backend/features Windows và quyền truy cập interface thực |
-| Windows API | Thêm khi cần identity, notification hoặc audio | Feature flags tối thiểu cho tính năng đang làm |
+| HID | hidapi 2.6.7 với windows-native | Giới hạn metadata/enumeration và quyền truy cập interface thực |
+| Windows API | windows-sys 0.61 cho lookup Container ID | Notification/audio chưa triển khai |
 | License source | Giữ MIT hiện có | Rà nghĩa vụ dependency và binary trước khi phát hành |
+| License Slint | Royalty-free 2.0; AboutSlint trong menu Trợ giúp → Giới thiệu | Rà đầy đủ notice/transitive dependency khi đóng gói binary |
 
-Slint 1.18.1 là phiên bản tham chiếu khi lập kế hoạch và yêu cầu Rust từ 1.92. Đây chưa phải dependency đã được cài hoặc khóa trong repo. Khi triển khai, kiểm tra lại phiên bản, MSRV, features và license; đồng bộ `slint`/`slint-build`, commit `Cargo.lock`.
+Slint và slint-build cùng phiên bản 1.18.1, yêu cầu Rust từ 1.92; các phiên bản được lưu trong Cargo.lock. MSRV check đã qua trên Rust 1.92.0; test suite chạy trên 1.96.0. Slint tắt default features và bật std/backend-winit/renderer-software/accessibility/compat-1-18. Xem [báo cáo Phase 1](docs/phase-1-report.md) và [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## 3. Scope theo mốc sản phẩm
 
@@ -59,7 +60,7 @@ Chi tiết nhiệm vụ và điều kiện kết thúc từng giai đoạn nằm
 - **Quyền truy cập:** không mặc định chạy app bằng admin. Thông báo rõ lỗi truy cập hoặc xung đột với phần mềm khác.
 - **Dữ liệu:** khi có config, ghi thay thế an toàn theo Windows; không tự ghi đè file hỏng hoặc xóa dữ liệu để sửa lỗi.
 - **Riêng tư:** không thu thập phím gõ, telemetry hay tự tải log lên mạng. Làm sạch serial, đường dẫn cá nhân và dữ liệu nhạy cảm trong log/fixture chia sẻ.
-- **UI:** dùng capability và giới hạn thực tế; hỗ trợ bàn phím, resize và trạng thái lỗi. Chỉ ghi đã kiểm tra giao diện khi đã xem render.
+- **UI:** dùng capability và giới hạn thực tế; hỗ trợ bàn phím, resize và trạng thái lỗi. Ưu tiên test chức năng/tương tác; chỉ chụp hoặc lưu ảnh khi người dùng yêu cầu rõ ràng.
 - **Hiệu năng:** đo startup, bộ nhớ và CPU idle bằng release build; ghi máy, phiên bản, số thiết bị và cách đo. Chốt budget sau khi có baseline.
 
 ## 5. Ngoài scope hiện tại
@@ -74,9 +75,9 @@ Cloud/account, đồng bộ online, database, web server, Windows service, firmw
 | --- | --- | --- |
 | Model đầu tiên, USB/Bluetooth/receiver, firmware nếu biết | Chưa có dữ liệu | Triển khai protocol ở giai đoạn 2 |
 | Model của hãng thứ hai và thiết bị kiểm thử | Chưa có dữ liệu | Giai đoạn 3 |
-| Windows tối thiểu, Rust/MSVC/Windows SDK và dependency cụ thể | Chưa kiểm chứng | Khởi tạo app ở giai đoạn 1 |
-| Ngân sách RAM/CPU/startup | Chưa có baseline | Đánh giá hiệu năng sau baseline giai đoạn 1 |
-| Lựa chọn license Slint và notice khi phân phối | Chưa chốt | Chọn điều khoản phù hợp khi tích hợp; rà lại trước phát hành |
+| Mở rộng matrix Windows | Windows 10 22H2 đã kiểm tra; 1.96 build/test và 1.92 check qua | Windows 11 và CI remote trước khi công bố matrix tương ứng |
+| Ngân sách RAM/CPU/startup | Đã có một mẫu baseline trong báo cáo Phase 1; chưa chốt ngưỡng | Đánh giá nhiều lần trên môi trường mục tiêu trước khi cam kết budget |
+| License/notice khi phân phối binary | Đã chọn Slint Royalty-free 2.0 và AboutSlint; chưa hoàn tất audit dependency bắc cầu/asset | Trước phát hành |
 | Tên hiển thị chính thức OpenGearHub/GearHub | Tên làm việc | Trước phát hành công khai |
 
 Thiếu model kiểm thử không chặn công việc nhận diện an toàn ở giai đoạn 1.

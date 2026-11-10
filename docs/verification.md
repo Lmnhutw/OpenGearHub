@@ -1,6 +1,6 @@
 # Kiểm chứng và ghi nhận kết quả
 
-Tài liệu này là checklist cho các giai đoạn trong [roadmap](roadmap.md), không phải kết quả test đã chạy. Hiện chưa có Cargo project, UI hoặc kiểm thử phần cứng.
+Tài liệu này là checklist cho các giai đoạn trong [roadmap](roadmap.md), không phải kết quả test đã chạy. Xem kết quả thực tế, baseline và các kiểm tra còn thiếu trong [báo cáo Phase 1](phase-1-report.md).
 
 ## 1. Build và kiểm tra tự động
 
@@ -30,7 +30,7 @@ Chỉ thêm test khi logic tương ứng được triển khai.
 
 ## 3. UI và vòng đời
 
-- [ ] Xem render thật và lưu ảnh/bằng chứng phù hợp sau thay đổi UI.
+- [ ] Ưu tiên test chức năng và tương tác UI; chỉ chụp/lưu ảnh khi người dùng yêu cầu, không tạo ảnh bằng chứng mặc định.
 - [ ] Kiểm tra resize, overflow, focus, thao tác bàn phím và nhãn trạng thái.
 - [ ] Kiểm tra loading, empty, error, unsupported và trường chưa có dữ liệu.
 - [ ] Discovery chậm không chặn thao tác UI; refresh liên tiếp không tích lũy vô hạn.
@@ -55,9 +55,9 @@ Dùng release build; giữ phương pháp và môi trường giống nhau khi so
 
 | Kịch bản | Số liệu cần ghi | Trạng thái |
 | --- | --- | --- |
-| Khởi động | Thời gian đến UI và inventory đầu tiên | Chưa đo |
-| UI mở, idle | CPU tiến trình, private bytes và working set | Chưa đo |
-| Refresh | Thời gian discovery, CPU/bộ nhớ và độ đáp ứng UI | Chưa đo |
+| Khởi động | Thời gian đến UI và inventory đầu tiên | Đã đo main → show và discovery; chưa đo loader/first paint; xem báo cáo Phase 1 |
+| UI mở, idle | CPU tiến trình, private bytes và working set | Có mẫu 10.028 giây; chưa phải benchmark cô lập; xem báo cáo Phase 1 |
+| Refresh | Thời gian discovery, CPU/bộ nhớ và độ đáp ứng UI | Discovery quan sát 10–17 ms; chưa đo CPU peak riêng |
 | UI ẩn/tray, khi đã có | CPU/bộ nhớ và tác vụ nền còn chạy | Chưa triển khai |
 
 Không điền số giả hoặc cam kết budget trước baseline. Phân biệt working set với private bytes, không gọi chung một con số là toàn bộ RAM app.

@@ -1,15 +1,17 @@
-# Khung source Rust
+# Source Rust
 
-Hiện chưa có Cargo project hoặc file Rust. Cấu trúc đích được mô tả trong [kiến trúc](../docs/architecture.md); công việc bắt đầu tại G1-01 của [roadmap](../docs/roadmap.md).
+Phase 1 đã có Cargo project và các module inventory HID chỉ đọc. Cấu trúc và ranh giới được mô tả trong [kiến trúc](../docs/architecture.md); kết quả kiểm chứng nằm trong [roadmap](../docs/roadmap.md).
 
-| File/module dự kiến | Trách nhiệm |
+| File/module | Trách nhiệm |
 | --- | --- |
 | `main.rs` | Khởi tạo, wiring và vòng đời app |
 | `app.rs` | App state và callback UI |
-| `devices/types.rs` | Descriptor, identity, capability và snapshot |
+| `devices/types.rs` | Descriptor, identity, grouping interface và bus |
 | `devices/discovery.rs` | Inventory và chuẩn hóa metadata |
-| `devices/registry.rs` | Mapping model/interface tới bộ xử lý |
+| `devices/registry.rs` | Matcher và registry; hiện chưa đăng ký model điều khiển |
 | `devices/worker.rs` | Hàng đợi, context/handle và I/O |
-| `devices/driver.rs` | Contract điều khiển khi có protocol thật ở giai đoạn 2 |
+| `devices/driver.rs` (chưa tạo) | Contract điều khiển khi có protocol thật ở giai đoạn 2 |
 
-Chỉ tạo file khi có nội dung triển khai thực; không thêm struct/trait giả để lấp cấu trúc. Worker và UI không chứa điều kiện riêng theo hãng/model.
+Worker dùng hàng đợi có giới hạn, bỏ refresh lặp khi còn pending và chuyển kết quả về UI bằng event loop. Lỗi scan giữ inventory trước; shutdown ngừng nhận lệnh và bỏ kết quả muộn. Enumeration không hủy được trong backend hiện tại nên worker đang bận được detach khi thoát.
+
+Model, protocol và capability điều khiển vẫn thuộc giai đoạn 2. Worker và UI không chứa điều kiện riêng theo hãng/model.

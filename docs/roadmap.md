@@ -5,8 +5,8 @@ Cập nhật: 2026-11-10. Đây là nguồn theo dõi trạng thái nhiệm vụ
 ## Trạng thái hiện tại
 
 - Đã hoàn thành mốc chuẩn bị: khung thư mục và tài liệu (G0).
-- Giai đoạn 1 chưa bắt đầu; chưa có Cargo project, app hoặc hỗ trợ thiết bị thực.
-- Công việc tiếp theo khi được giao triển khai: **G1-01**.
+- Phase 1 đã triển khai và kiểm chứng: 29 test qua, build release/MSRV qua, inventory thật và kiểm tra tay do người dùng xác nhận. Xem [báo cáo](phase-1-report.md).
+- Công việc tiếp theo khi được giao giai đoạn mới: **G2-01**. Chưa có model điều khiển nào được hỗ trợ; CI remote chưa chạy.
 - Chưa có model kiểm thử; thông tin này chỉ cần trước phần protocol ở giai đoạn 2.
 
 Chỉ đánh dấu `[x]` khi có bằng chứng hoàn thành. Khi đang làm, thêm dòng `Đang làm: <ID>`; khi bị chặn, ghi nguyên nhân và phần vẫn có thể tiếp tục. Không tự chuyển giai đoạn từ danh sách bên dưới.
@@ -20,15 +20,15 @@ Chỉ đánh dấu `[x]` khi có bằng chứng hoàn thành. Khi đang làm, th
 
 ## G1 — Nền tảng và nhận diện HID
 
-- [ ] **G1-01:** Kiểm tra Rust, target Windows, MSVC/Windows SDK; chọn dependency, features và điều khoản Slint phù hợp.
-- [ ] **G1-02:** Khởi tạo một Cargo package và cửa sổ Slint tối giản; commit lockfile, thêm ignore cho build output và cập nhật hướng dẫn build/run.
-- [ ] **G1-03:** Thêm descriptor/identity, discovery HID và chuẩn hóa dữ liệu thiếu ngoài UI thread.
-- [ ] **G1-04:** Thêm matcher/registry nhỏ với kiểm tra match mơ hồ; thiết bị chưa hỗ trợ chỉ được inventory. Không thêm protocol giả.
-- [ ] **G1-05:** Thêm worker, refresh không chặn UI, gộp yêu cầu lặp và xử lý vòng đời.
-- [ ] **G1-06:** UI danh sách–chi tiết, lựa chọn thiết bị, loading/empty/error/unsupported; kiểm tra resize và bàn phím.
-- [ ] **G1-07:** Test nhiều interface, hai thiết bị cùng VID/PID, metadata thiếu và discovery lỗi; fixture ghi rõ nguồn gốc.
-- [ ] **G1-08:** Windows CI cho fmt/check/clippy/test không cần phần cứng; kiểm tra thủ công refresh, cắm/rút và thoát app.
-- [ ] **G1-09:** Đo baseline release build, cập nhật bằng chứng và báo cáo kết thúc giai đoạn.
+- [x] **G1-01:** Kiểm tra Rust, target Windows, MSVC/Windows SDK; chọn dependency, features và điều khoản Slint phù hợp.
+- [x] **G1-02:** Khởi tạo một Cargo package và cửa sổ Slint; tạo Cargo.lock để đưa vào Git, ignore build output và hướng dẫn build/run. Changeset chưa commit/push.
+- [x] **G1-03:** Descriptor/identity, discovery HID và chuẩn hóa dữ liệu thiếu ngoài UI thread; quan sát 16 interface / 3 nhóm.
+- [x] **G1-04:** Matcher/registry và test match mơ hồ; production registry rỗng, không có protocol giả.
+- [x] **G1-05:** Worker, refresh không chặn UI, bỏ yêu cầu lặp và kiểm tra đóng khi scan đang bị chặn.
+- [x] **G1-06:** UI danh sách–chi tiết và trạng thái; test bàn phím/F5/resize, người dùng xác nhận thao tác native.
+- [x] **G1-07:** Test nhiều interface, cùng VID/PID, metadata thiếu và discovery lỗi; dữ liệu synthetic ghi rõ nguồn gốc.
+- [x] **G1-08:** Tạo Windows CI; các lệnh tương ứng qua local; người dùng xác nhận refresh/cắm-rút/thoát app. CI trên GitHub chưa chạy.
+- [x] **G1-09:** Baseline release một mẫu, kết quả và giới hạn ghi tại báo cáo Phase 1.
 
 Điều kiện hoàn thành: inventory HID thật có identity trung thực, UI đáp ứng khi discovery chậm và kết quả shutdown được ghi nhận. Không gửi report điều khiển riêng hãng. Chưa thêm audio, profile hoặc tray. Sau báo cáo G1, chờ yêu cầu tiếp theo.
 
@@ -66,5 +66,6 @@ Chọn từng công việc sau theo yêu cầu thực; không triển khai tất
 | Ngày | Công việc | Kết quả/bằng chứng | Bước tiếp theo |
 | --- | --- | --- | --- |
 | 2026-11-10 | G0-01 đến G0-04 | 15 file Markdown, 37 link nội bộ và các thư mục dự kiến đã kiểm tra; whitespace hợp lệ, LICENSE không đổi. Chưa có Cargo project hoặc kiểm thử app/phần cứng | G1-01 khi được giao triển khai |
+| 2026-11-10 | G1-01 đến G1-09 | 29 test qua; fmt/check/clippy/release/MSRV qua; inventory 16/3 → 10/2 → 16/3, process thoát exit 0 và người dùng xác nhận kiểm tra tay. [Chi tiết](phase-1-report.md) | G2-01 khi có yêu cầu tiếp theo; CI remote sau khi push |
 
 Khi cập nhật nhật ký, dẫn tới task/PR/commit hoặc bản ghi kiểm chứng nếu có. Không chép log chứa dữ liệu cá nhân vào tài liệu.

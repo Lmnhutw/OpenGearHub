@@ -26,6 +26,6 @@
 
 - Theo [verification](docs/verification.md); không báo thành công cho check chưa chạy.
 - Test giả lập không thay thế kiểm thử phần cứng. Không nâng mức hỗ trợ chỉ vì CI xanh.
-- Khi có UI, xem render và kiểm tra tương tác trước khi báo hoàn thành giao diện.
+- Ưu tiên test chức năng và tương tác. Chỉ chụp hoặc lưu ảnh màn hình khi người dùng yêu cầu rõ ràng; không coi ảnh bằng chứng là điều kiện mặc định để hoàn thành công việc.
 - Cập nhật roadmap và tài liệu chịu ảnh hưởng trong cùng thay đổi. Ghi rõ blocker, dữ liệu còn thiếu và bước tiếp theo.
 - Tài liệu dùng tiếng Việt hoặc tiếng Anh; identifier trong code giữ nhất quán theo Rust/Slint.

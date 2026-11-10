@@ -1,6 +1,8 @@
 # Fixtures
 
-Chỗ dành cho descriptor/report phục vụ test khi logic tương ứng được triển khai. Hiện chưa có fixture hoặc test.
+Các test unit hiện dùng descriptor synthetic trực tiếp trong module Rust: path `synthetic://...`, VID `0xffff`, PID `0x0001`, usage page `0xff00`. Đây là dữ liệu tự tạo để kiểm tra grouping, metadata thiếu và matcher; không được capture từ thiết bị thật và không chứng minh model nào được hỗ trợ.
+
+Hiện chưa có file HID report hoặc capture phần cứng. Khi cần dữ liệu dạng file, đặt tại thư mục này và ghi nguồn gốc theo hướng dẫn dưới đây.
 
 Mỗi fixture cần ghi nguồn gốc trong README hoặc metadata đi kèm:
 

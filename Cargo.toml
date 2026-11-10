@@ -1,0 +1,25 @@
+[package]
+name = "opengearhub"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT"
+description = "Read-only Windows HID inventory with a Slint desktop interface"
+repository = "https://github.com/Lmnhutw/OpenGearHub"
+
+[dependencies]
+slint = { version = "=1.18.1", default-features = false, features = ["std", "backend-winit", "renderer-software", "accessibility", "compat-1-18"] }
+
+[target.'cfg(windows)'.dependencies]
+hidapi = { version = "=2.6.7", default-features = false, features = ["windows-native"] }
+windows-sys = { version = "0.61", features = ["Win32_Devices_DeviceAndDriverInstallation", "Win32_Devices_Properties"] }
+
+[build-dependencies]
+slint-build = { version = "=1.18.1", default-features = false, features = ["compat-1-18"] }
+
+[lints.rust]
+unsafe_code = "warn"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"

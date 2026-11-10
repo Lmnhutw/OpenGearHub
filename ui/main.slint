@@ -1,0 +1,192 @@
+import { AboutSlint, Button, StandardListView, TextEdit } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "OpenGearHub";
+    preferred-width: 1100px;
+    preferred-height: 720px;
+    min-width: 800px;
+    min-height: 520px;
+    background: #f4f6fa;
+    default-font-size: 14px;
+    forward-focus: device-list;
+
+    in property <[StandardListViewItem]> devices;
+    in property <bool> refreshing;
+    in property <string> status-text;
+    in property <string> error-text;
+    in-out property <int> selected-index: -1;
+    in property <string> detail-text;
+    callback refresh();
+    callback selection-changed(int);
+    callback results-ready();
+
+    MenuBar {
+        Menu {
+            title: "Thiết bị";
+            MenuItem {
+                title: "Làm mới";
+                enabled: !root.refreshing;
+                shortcut: @keys(F5);
+                activated => { root.refresh(); }
+            }
+        }
+        Menu {
+            title: "Trợ giúp";
+            MenuItem {
+                title: "Giới thiệu OpenGearHub";
+                activated => { about.show(); }
+            }
+        }
+    }
+
+    VerticalLayout {
+        padding: 24px;
+        spacing: 16px;
+
+        HorizontalLayout {
+            spacing: 16px;
+            VerticalLayout {
+                spacing: 6px;
+                Text {
+                    text: "OpenGearHub";
+                    color: #182a40;
+                    font-size: 26px;
+                    font-weight: 700;
+                }
+                Text {
+                    text: "Thiết bị của bạn, trong một giao diện.";
+                    color: #526277;
+                }
+            }
+            Rectangle { horizontal-stretch: 1; }
+            Button {
+                text: root.refreshing ? "Đang quét…" : "Làm mới (F5)";
+                enabled: !root.refreshing;
+                clicked => { root.refresh(); }
+            }
+        }
+
+        Text {
+            text: root.status-text;
+            color: #526277;
+            wrap: word-wrap;
+        }
+
+        if root.error-text != "" : Rectangle {
+            background: #fff1e6;
+            border-color: #e9c6a6;
+            border-width: 1px;
+            border-radius: 6px;
+            VerticalLayout {
+                padding: 12px;
+                Text {
+                    text: root.error-text;
+                    color: #7b3b16;
+                    wrap: word-wrap;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 16px;
+            vertical-stretch: 1;
+
+            Rectangle {
+                background: white;
+                border-color: #dce2eb;
+                border-width: 1px;
+                border-radius: 8px;
+                min-width: 280px;
+                preferred-width: 390px;
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 12px;
+                    Text {
+                        text: "Nhóm HID · \{root.devices.length}";
+                        color: #182a40;
+                        font-weight: 600;
+                    }
+                    if root.devices.length == 0 : Text {
+                        text: root.refreshing ? "Đang tìm thiết bị HID…" : root.error-text != "" ? "Chưa có inventory mới. Xem thông báo lỗi và thử làm mới." : "Chưa có thiết bị HID trong danh sách. Chọn Làm mới để quét lại.";
+                        color: #526277;
+                        wrap: word-wrap;
+                    }
+                    device-list := StandardListView {
+                        model: root.devices;
+                        current-item <=> root.selected-index;
+                        vertical-stretch: 1;
+                        current-item-changed(index) => {
+                            root.selection-changed(index);
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                background: white;
+                border-color: #dce2eb;
+                border-width: 1px;
+                border-radius: 8px;
+                min-width: 340px;
+                horizontal-stretch: 2;
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 12px;
+                    Text {
+                        text: "Thông tin chi tiết";
+                        color: #182a40;
+                        font-weight: 600;
+                    }
+                    TextEdit {
+                        text: root.detail-text;
+                        read-only: true;
+                        wrap: word-wrap;
+                        vertical-stretch: 1;
+                    }
+                }
+            }
+        }
+
+        Text {
+            text: "Chỉ nhận diện HID · Chưa hỗ trợ điều khiển thiết bị · Dữ liệu chưa xác định sẽ được ghi rõ.";
+            color: #526277;
+            wrap: word-wrap;
+            font-size: 12px;
+        }
+    }
+
+    about := PopupWindow {
+        width: 430px;
+        height: 290px;
+        x: (root.width - self.width) / 2;
+        y: (root.height - self.height) / 2;
+        close-policy: no-auto-close;
+        Rectangle {
+            background: white;
+            border-color: #dce2eb;
+            border-width: 1px;
+            border-radius: 8px;
+            VerticalLayout {
+                padding: 24px;
+                spacing: 14px;
+                Text {
+                    text: "Giới thiệu OpenGearHub";
+                    color: #182a40;
+                    font-size: 20px;
+                    font-weight: 600;
+                }
+                Text {
+                    text: "Ứng dụng mã nguồn mở để nhận diện và từng bước quản lý thiết bị ngoại vi. Source OpenGearHub được cấp phép MIT.";
+                    color: #526277;
+                    wrap: word-wrap;
+                }
+                AboutSlint { }
+                Button {
+                    text: "Đóng";
+                    clicked => { about.close(); }
+                }
+            }
+        }
+    }
+}
